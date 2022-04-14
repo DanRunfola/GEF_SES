@@ -291,5 +291,6 @@ with open("models/m3_lag_pdsi_tmmn_IMPLEMENTED.txt","wt") as f:
 #2) Ensure we don't have multicollinearity (or, at least minimize it) - in this case, probably by dropping tmmn.  You can explore multicollinearity by creating scatterplots to see what's correlated.
 #3) Try different modeling approaches, as noted in the comments above - see if the results you observe are robust.
 #4) Re-run this for nighttime light data, noting you'll have fewer observations, to see if there is any observable impact on NTL.  Note you'll need to explore different model approaches etc., just like NDVI.
+#5 start slotting your findings into your chapter template!
 
 #That's it for this part - the next script will explore the socioeconomic impacts using a gridded model!
