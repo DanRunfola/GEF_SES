@@ -1,0 +1,25 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                   NDVI   R-squared:                       0.844
+Model:                            OLS   Adj. R-squared:                  0.844
+Method:                 Least Squares   F-statistic:                 3.405e+04
+Date:                Thu, 14 Apr 2022   Prob (F-statistic):               0.00
+Time:                        13:57:41   Log-Likelihood:                 10559.
+No. Observations:                6299   AIC:                        -2.111e+04
+Df Residuals:                    6297   BIC:                        -2.110e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      0.0507      0.003     16.223      0.000       0.045       0.057
+NDVI_LAG       0.9175      0.005    184.535      0.000       0.908       0.927
+==============================================================================
+Omnibus:                      977.214   Durbin-Watson:                   2.682
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             9219.784
+Skew:                          -0.447   Prob(JB):                         0.00
+Kurtosis:                       8.859   Cond. No.                         12.1
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
