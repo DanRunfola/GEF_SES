@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import os.path
 import statsmodels.formula.api as smf
+import scipy
 
 #The goal of this script is to do an analysis of the impact of GEF projects
 #using a cross sectional approach.  Here, we look at areas within or proximate
@@ -204,7 +205,7 @@ with open("models/propensityModel.txt","wt") as f:
 #We're going to programmatically use the results of our linear model to construct our predictions.
 #Conveniently, the statsmodels package provides these for us, so all we need to do is save them to
 #our dataframe.
-gridDta["propensityScore"] = result.fittedvalues
+gridDta["propensityScore"] = result.predict(gridDta)
 
 #Map our scores - note they'll be pretty random right now,
 #as the propensity model isn't very good in this example!
@@ -233,7 +234,7 @@ plt.savefig("visualizations/propensityScores.jpg")
 #in the final model, this can be straightforward.
 #########
 
-#Caching this, as it takes forever (~hours).
+#Caching this to keep things fast.
 
 if(not os.path.exists("cache/gridWithMatches.geojson")):
     #First, we'll create a new column which will be a "0" if it is not included in the matched dataframe,
@@ -243,28 +244,27 @@ if(not os.path.exists("cache/gridWithMatches.geojson")):
     #We'll also save the final match IDs
     gridDta["matchID"] = 0
 
-    for i, row in gridDta.iterrows():
-        if(row["Intervention"] == 1):
-            #First, we'll set the intervention row as being included in the matched dataframe.
-            gridDta.at[i, "matchedDataframe"] = 1
-            #Now, we'll search across (remaining) controls to select the best match.
-            treatmentScore = row["propensityScore"]
-            bestMatchScore = 999
-            bestMatchID = 0
-            for j, controlRow in gridDta.iterrows():
-                if(controlRow["Intervention"] == 0):
-                    if(controlRow["matchedDataframe"] == 0):
-                        matchQuality = (treatmentScore - controlRow["propensityScore"])
-                        if(bestMatchScore > matchQuality):
-                            bestMatchScore = matchQuality
-                            bestMatchID = j
-            #Save the match ID into the main dataframe.
-            gridDta.at[i, "matchID"] = bestMatchID
-            #Set the match as included
-            gridDta.at[j, "matchedDataframe"] = 1
+    #We're also going to make a deep copy of our dataframe so we can remove values during the loop.
+    controlCopy = gridDta.copy(deep=True)
+    
+    #for each row, we find the smallest difference between the propensity of that treatment
+    #and all controls.
+
+for i, row in gridDta.iterrows():
+    if(row["Intervention"] == 1):
+        #First, we'll set the intervention row as being included in the matched dataframe.
+        gridDta.at[i, "matchedDataframe"] = 1
+        #Now, we'll search across (remaining) controls to select the best match.
+        searchProp = row["propensityScore"] - controlCopy["propensityScore"].values
+        
+        print(searchProp)
+            
     
     gridDta.to_file("cache/gridWithMatches.geojson", driver="GeoJSON")
 
 else:
     print("Using Cached matches.")
     gridDta = gpd.read_file("cache/gridWithMatches.geojson")
+
+
+#see https://www.statsmodels.org/dev/examples/notebooks/generated/regression_plots.html
